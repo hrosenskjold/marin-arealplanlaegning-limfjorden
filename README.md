@@ -126,9 +126,14 @@ Projektet følger [Semantic Versioning](https://semver.org/lang/da/)
   - `data/source/` = kildedata (GeoPackage/Shapefiles), det man redigerer i QGIS/ArcGIS.
   - `web/data/*.geojson` = webklar eksport (WGS84, afrundet præcision) — genereret, aldrig redigeret i hånden.
   - `web/data/kriterier_config.json` = UI-konfiguration (titel, kriterier, vægte) — redigeres direkte, ingen kodeændring nødvendig.
-- **`generate_dummy_data.py` er deterministisk** (faste random-seeds), så
-  outputtet er reproducerbart — CI genkører scriptet og fejler, hvis
-  resultatet afviger fra det committede (se `validate.yml`).
+- **`generate_dummy_data.py` er deterministisk** (faste random-seeds, og
+  `gpkg_contents.last_change` pinnes efter skrivning så GeoPackage'n ikke
+  faar et nyt tidsstempel ved hver kørsel). CI genkører scriptet og
+  fejler, hvis den resulterende `web/data/*.geojson` afviger fra det
+  committede (se `validate.yml`). `data/source` (GeoPackage/Shapefile)
+  tjekkes bevidst *ikke* byte-for-byte i CI — GDAL/pyogrio kan lægge
+  identiske data ud i en anden binær struktur på tværs af
+  biblioteksversion/OS, uden at det er en reel data-fejl.
 - **`noindex`** (`<meta name="robots">` + `web/robots.txt`) så testudkastet
   ikke dukker op i søgemaskiner, mens det stadig er et udkast.
 - **Farver er tilgængelighedsvalideret** via en sekventiel enkelt-hue-rampe

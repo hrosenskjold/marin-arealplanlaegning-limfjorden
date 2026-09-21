@@ -60,9 +60,15 @@ jobs:
       - name: Genkør data-generatoren
         run: python data/generate_dummy_data.py
 
-      - name: Fejl hvis genereret output afviger fra det committede
+      # Kun web/data (GeoJSON, tekstbaseret) tjekkes byte-for-byte - det er
+      # det webløsningen faktisk laeser. data/source (GeoPackage/Shapefile)
+      # udelades bevidst: GDAL/pyogrio kan lægge identiske data ud i en
+      # anden binær SQLite-/shapefil-struktur pa tvaers af biblioteksversion
+      # og OS, selv med last_change pinnet i generate_dummy_data.py - det er
+      # ikke en reel data-fejl, saa det ville give falske alarmer i CI.
+      - name: Fejl hvis genereret web-GeoJSON afviger fra det committede
         run: |
-          git diff --exit-code -- data/source web/data || {
-            echo "::error::web/data eller data/source matcher ikke output fra generate_dummy_data.py - kør scriptet lokalt og commit resultatet.";
+          git diff --exit-code -- web/data || {
+            echo "::error::web/data matcher ikke output fra generate_dummy_data.py - kør scriptet lokalt og commit resultatet.";
             exit 1;
           }
