@@ -14,6 +14,7 @@ Koer scriptet igen for at regenerere data:
     python data/generate_dummy_data.py
 """
 
+import sqlite3
 from pathlib import Path
 
 import geopandas as gpd
@@ -151,6 +152,17 @@ def add_criteria(gdf: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
 # 4. Skriv output: GeoPackage (multi-lag), Shapefiles, og web-GeoJSON (WGS84)
 # ---------------------------------------------------------------------------
 
+def pin_gpkg_timestamps(gpkg_path: Path) -> None:
+    """GDAL stamper gpkg_contents.last_change med selve skrivetidspunktet,
+    saa to koersler med 100% identiske data alligevel giver forskellige
+    filer byte-for-byte. Saet en fast dummy-vaerdi, saa output er
+    reproducerbart (og CI's diff-tjek giver mening)."""
+    con = sqlite3.connect(gpkg_path)
+    con.execute("UPDATE gpkg_contents SET last_change = '2026-01-01T00:00:00.000Z'")
+    con.commit()
+    con.close()
+
+
 def main():
     GPKG_PATH.parent.mkdir(parents=True, exist_ok=True)
     SHP_DIR.mkdir(parents=True, exist_ok=True)
@@ -177,6 +189,7 @@ def main():
         GPKG_PATH.unlink()
     study_area.to_file(GPKG_PATH, layer="studieomraade", driver="GPKG")
     grid.to_file(GPKG_PATH, layer="kriterier_grid", driver="GPKG")
+    pin_gpkg_timestamps(GPKG_PATH)  # goer output byte-for-byte reproducerbart
     print(f"Skrev GeoPackage: {GPKG_PATH.relative_to(REPO_ROOT)}")
 
     # --- Shapefiles: et lag pr. fil ---

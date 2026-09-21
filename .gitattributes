@@ -1,0 +1,11 @@
+# Normalisér tekstfiler til LF, uanset OS - undgår CRLF/LF-støj i diffs.
+* text=auto eol=lf
+
+# Binære GIS-formater - lad git aldrig forsøge tekst-normalisering på dem.
+*.gpkg binary
+*.shp binary
+*.shx binary
+*.dbf binary
+*.png binary
+*.jpg binary
+*.jpeg binary

@@ -1,0 +1,68 @@
+name: Validér data og config
+
+on:
+  pull_request:
+    paths:
+      - "data/**"
+      - "web/**"
+      - ".github/workflows/validate.yml"
+  push:
+    branches: [master]
+    paths:
+      - "data/**"
+      - "web/**"
+      - ".github/workflows/validate.yml"
+
+jobs:
+  json-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Tjek at alle .json/.geojson-filer er gyldige
+        run: |
+          python3 - <<'PY'
+          import json
+          import pathlib
+          import sys
+
+          bad = []
+          for path in list(pathlib.Path("web").rglob("*.json")) + list(pathlib.Path("web").rglob("*.geojson")):
+              try:
+                  data = json.loads(path.read_text(encoding="utf-8"))
+              except Exception as exc:
+                  bad.append(f"{path}: {exc}")
+                  continue
+              if path.suffix == ".geojson":
+                  if data.get("type") not in ("FeatureCollection", "Feature"):
+                      bad.append(f"{path}: uventet GeoJSON 'type': {data.get('type')!r}")
+
+          if bad:
+              print("Ugyldige filer:")
+              for line in bad:
+                  print(f"  - {line}")
+              sys.exit(1)
+          print("Alle JSON/GeoJSON-filer er gyldige.")
+          PY
+
+  data-reproducibility:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Installér afhængigheder
+        run: pip install geopandas numpy shapely pyogrio
+
+      - name: Genkør data-generatoren
+        run: python data/generate_dummy_data.py
+
+      - name: Fejl hvis genereret output afviger fra det committede
+        run: |
+          git diff --exit-code -- data/source web/data || {
+            echo "::error::web/data eller data/source matcher ikke output fra generate_dummy_data.py - kør scriptet lokalt og commit resultatet.";
+            exit 1;
+          }

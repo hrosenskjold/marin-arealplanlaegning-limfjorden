@@ -35,6 +35,7 @@ async function init() {
   applyTextContent(config);
   buildSliders(config);
   buildLegend();
+  buildVersionLine(config);
 
   const map = buildMap(studyArea);
   state.gridLayer = buildGridLayer(grid, map);
@@ -135,6 +136,12 @@ function updateSliderValueLabel(input) {
 function buildLegend() {
   const grad = document.getElementById("legend-gradient");
   grad.style.background = `linear-gradient(90deg, ${SEQ_RAMP.join(", ")})`;
+}
+
+function buildVersionLine(config) {
+  const el = document.getElementById("version-line");
+  if (!el || !config.version) return;
+  el.innerHTML = `Version <a href="https://github.com/hrosenskjold/marin-arealplanlaegning-limfjorden/blob/master/CHANGELOG.md" target="_blank" rel="noopener">v${config.version}</a>`;
 }
 
 // ---------------------------------------------------------------------------

@@ -88,6 +88,70 @@ Pages, uden serverdrift.
   Workflowet i `.github/workflows/deploy.yml` deployer `web/`-mappen ved
   hvert push til `main`.
 
+## Versionering
+
+Projektet følger [Semantic Versioning](https://semver.org/lang/da/)
+(`MAJOR.MINOR.PATCH`) og [Keep a Changelog](https://keepachangelog.com/da/1.0.0/):
+
+- Alle mærkbare ændringer beskrives i [`CHANGELOG.md`](CHANGELOG.md) under
+  `[Unreleased]`, efterhånden som de laves.
+- Versionsnummeret er den ene sandhedskilde i
+  `web/data/kriterier_config.json` (`"version"`) — appen viser det selv
+  nederst i sidebaren, med link til changeloggen.
+- Ved en udgivelse: flyt `[Unreleased]`-punkterne til et nyt afsnit
+  `[X.Y.Z] - YYYY-MM-DD` i `CHANGELOG.md`, opdatér `version` i
+  `kriterier_config.json` tilsvarende, commit, og tag:
+
+  ```bash
+  git tag -a vX.Y.Z -m "vX.Y.Z"
+  git push origin vX.Y.Z
+  ```
+
+  Brug MAJOR ved brud på datastruktur/felt- eller lagnavne (alt der kan
+  ødelægge en integration), MINOR ved nye kriterier/funktioner, og PATCH
+  ved rettelser eller rene data-opdateringer.
+- Overvej at oprette et [GitHub Release](../../releases) pr. tag, så der
+  er et klart historisk overblik ud over selve commit-loggen.
+
+## Best practice / arkitekturvalg i dette udkast
+
+- **Statisk site, ingen server/build-step.** Ren HTML/CSS/vanilla JS +
+  Leaflet fra CDN. Minimerer angrebsflade og driftsbyrde — hele
+  løsningen kan hostes gratis på GitHub Pages.
+- **CDN-afhængigheder er pinnet med SRI-hash** (`integrity="sha256-..."`
+  i `index.html`) og fast versionsnummer (Leaflet 1.9.4), så en
+  kompromitteret eller ændret CDN-fil ikke kan injicere kode uden at
+  browseren blokerer den.
+- **Skarp adskillelse af data-lag:**
+  - `data/source/` = kildedata (GeoPackage/Shapefiles), det man redigerer i QGIS/ArcGIS.
+  - `web/data/*.geojson` = webklar eksport (WGS84, afrundet præcision) — genereret, aldrig redigeret i hånden.
+  - `web/data/kriterier_config.json` = UI-konfiguration (titel, kriterier, vægte) — redigeres direkte, ingen kodeændring nødvendig.
+- **`generate_dummy_data.py` er deterministisk** (faste random-seeds), så
+  outputtet er reproducerbart — CI genkører scriptet og fejler, hvis
+  resultatet afviger fra det committede (se `validate.yml`).
+- **`noindex`** (`<meta name="robots">` + `web/robots.txt`) så testudkastet
+  ikke dukker op i søgemaskiner, mens det stadig er et udkast.
+- **Farver er tilgængelighedsvalideret** via en sekventiel enkelt-hue-rampe
+  (lav→høj egnethed), ikke en vilkårlig regnbue — holder det læsbart for
+  farveblinde og i gråtoneprint.
+- **`.gitattributes`** tvinger LF-linjeskift på tekstfiler på tværs af
+  Windows/macOS/Linux-bidragydere, så diffs ikke fyldes med
+  linjeskifts-støj.
+- **To CI-workflows** (`.github/workflows/`):
+  `deploy.yml` deployer `web/` til Pages ved push til `master`;
+  `validate.yml` kører på pull requests og tjekker gyldig JSON/GeoJSON
+  samt data-reproducerbarhed, så fejl fanges før merge.
+- **Anbefalet git-workflow fremadrettet:** lav ændringer på en
+  feature-branch og pull request i stedet for at pushe direkte til
+  `master`, da `master` auto-deployer til den offentlige URL. For et
+  solo-testudkast er direkte push til `master` acceptabelt, men skift til
+  PR-baseret workflow så snart flere bidrager, eller aktivér branch
+  protection under Settings → Branches.
+- **Ikke inkluderet endnu (kandidater til senere):** automatisk
+  Playwright-smoke-test i CI (skærmbillede + konsol-tjek ved hver PR),
+  license-fil (afklares med kommunens retningslinjer), og
+  adgangsstyring hvis/når siden skal vise ikke-offentlige data.
+
 ## Kendte begrænsninger (testudkast)
 
 - Fjordformen er håndtegnet/forenklet — **ikke** en autoritativ kystlinje.
