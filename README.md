@@ -71,7 +71,7 @@ GeoPackage, Shapefiles og web-GeoJSON i én kørsel — ret `CELL_SIZE_M` eller
 ## Sådan styres siden via GitHub
 
 Meningen er at indhold kan opdateres ved at redigere filer i repoet og
-pushe/merge til `main` — GitHub Actions deployer automatisk til GitHub
+pushe/merge til `master` — GitHub Actions deployer automatisk til GitHub
 Pages, uden serverdrift.
 
 - **Titel, undertitel, kriterienavne, beskrivelser og standardvægte:**
@@ -86,7 +86,7 @@ Pages, uden serverdrift.
 - **Hosting:** aktivér Pages under Settings → Pages → Source:
   *GitHub Actions* i det GitHub-repo, dette bliver pushet til.
   Workflowet i `.github/workflows/deploy.yml` deployer `web/`-mappen ved
-  hvert push til `main`.
+  hvert push til `master`.
 
 ## Versionering
 
