@@ -1,0 +1,30 @@
+{
+  "titel": "Marin arealplanlægning – Limfjorden ved Aalborg",
+  "undertitel": "Testudkast · vægtet egnethedsanalyse på syntetiske dummy-data",
+  "kriterier": [
+    {
+      "felt": "bund",
+      "navn": "Bundforhold",
+      "beskrivelse": "Egnethed ud fra bundtype/substrat",
+      "standardvaegt": 100
+    },
+    {
+      "felt": "dybde",
+      "navn": "Vanddybde",
+      "beskrivelse": "Egnethed ud fra vanddybde",
+      "standardvaegt": 100
+    },
+    {
+      "felt": "stroem",
+      "navn": "Strømforhold",
+      "beskrivelse": "Egnethed ud fra strømforhold",
+      "standardvaegt": 100
+    },
+    {
+      "felt": "natur",
+      "navn": "Eksisterende naturværdi",
+      "beskrivelse": "Naturværdi der bør tages hensyn til",
+      "standardvaegt": 100
+    }
+  ]
+}

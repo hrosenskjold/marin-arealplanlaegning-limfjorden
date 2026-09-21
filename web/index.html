@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="da">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Marin arealplanlægning – Limfjorden ved Aalborg</title>
+  <meta name="description" content="Testudkast: vægtet egnethedsanalyse af marine GIS-polygoner på dummy-data for Limfjorden ved Aalborg." />
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <div class="app">
+    <header class="site-header">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <div class="brand-text">
+          <h1 id="site-title">Marin arealplanlægning</h1>
+          <p id="site-subtitle">Limfjorden ved Aalborg</p>
+        </div>
+      </div>
+      <div class="header-meta">
+        <span class="badge">Testudkast · dummy-data</span>
+        <a class="repo-link" href="https://github.com/" target="_blank" rel="noopener">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+            <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38
+              0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13
+              -.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66
+              .07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15
+              -.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0
+              1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82
+              1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48
+              0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/>
+          </svg>
+          GitHub
+        </a>
+      </div>
+    </header>
+
+    <div class="app-layout">
+      <aside class="sidebar" id="sidebar">
+        <section class="panel">
+          <h2>Vægtning af kriterier</h2>
+          <p class="panel-hint">
+            Justér skyderne for at se, hvordan den samlede egnethedsscore på kortet
+            ændrer sig. Vægten angiver hvor meget hvert kriterie tæller i forhold
+            til de andre.
+          </p>
+          <div id="sliders" class="sliders" aria-live="polite"></div>
+          <button id="reset-btn" type="button" class="btn-reset">Nulstil vægte</button>
+        </section>
+
+        <section class="panel">
+          <h2>Signaturforklaring</h2>
+          <p class="panel-hint">Samlet vægtet egnethedsscore pr. celle (0–100).</p>
+          <div class="legend">
+            <div class="legend-gradient" id="legend-gradient"></div>
+            <div class="legend-labels">
+              <span>Lav</span>
+              <span>Høj</span>
+            </div>
+          </div>
+          <div class="legend">
+            <div class="legend-swatch legend-swatch--none"></div>
+            <span class="legend-note">Ingen aktiv vægt (alle skydere på 0)</span>
+          </div>
+        </section>
+
+        <section class="panel panel--detail" id="detail-panel" hidden>
+          <h2>Valgt celle <span id="detail-id" class="muted"></span></h2>
+          <div id="detail-body"></div>
+        </section>
+
+        <footer class="sidebar-footer">
+          <p>
+            Kortet viser <strong>syntetiske testdata</strong> uden faglig værdi —
+            kun til afprøvning af layout og funktionalitet.
+          </p>
+          <p class="muted">
+            Kriterier, titel og standardvægte styres via
+            <code>web/data/kriterier_config.json</code> i GitHub-repoet.
+          </p>
+        </footer>
+      </aside>
+
+      <main id="map" aria-label="Kort over Limfjorden ved Aalborg med vægtet egnethedsscore"></main>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+          integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
